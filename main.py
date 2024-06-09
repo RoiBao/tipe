@@ -4,13 +4,6 @@ from courbe import tracer_regression_lineaire, tracer_histogramme
 import matplotlib.pyplot as plt
 import os
 import sys
-from sklearn.linear_model import LinearRegression
-from sklearn.metrics import r2_score
-
-
-from github import Github
-from pathlib import Path
-
 
 sys.setrecursionlimit(2000)
 
@@ -145,39 +138,6 @@ generate_maze_functions = [optimized_kruskal, recursive_backtracking, recursive_
 generate_and_save_plot(titles, file_names, generate_maze_functions)
 
 # PCC
-def plot_with_regression(x, y, title, filename):
-    x = np.array(x)
-    y = np.array(y)
-
-    x_reshape = x.reshape(-1, 1)
-
-    model = LinearRegression()
-    model.fit(x_reshape, y)
-
-    y_pred = model.predict(x_reshape)
-
-    slope = model.coef_[0]
-    r2 = r2_score(y, y_pred)
-
-    plt.figure()
-    plt.scatter(x, y, color='blue', label='Données')
-    plt.plot(x, y_pred, color='red', label='Régression linéaire')
-
-    textstr = f'Coefficient directeur: {slope:.2f}\nR²: {r2:.2f}'
-
-    props = dict(boxstyle='round', facecolor='white', alpha=0.5)
-    plt.text(0.05, 0.95, textstr, transform=plt.gca().transAxes, fontsize=12,
-             verticalalignment='top', bbox=props)
-
-    plt.title(title)
-    plt.xlabel('Temps d\'absorption moyen')
-    plt.ylabel('Chemin le plus court')
-    plt.legend()
-    plt.grid(True)
-
-    plt.savefig(filename)
-
-
 def generate_and_save_plot(titles, file_names, generate_maze_functions):
     for title, file_name, generate_maze_function in zip(titles, file_names, generate_maze_functions):
         liste_tps = []
@@ -202,8 +162,16 @@ def generate_and_save_plot(titles, file_names, generate_maze_functions):
             liste_tps.append(sum(t1) / len(t1))
             liste_pcc.append(sum(t2) / len(t2))
 
-        plot_with_regression(liste_tps, liste_pcc, title, file_name)
+        plt.figure()
+        plt.plot(liste_pcc, liste_tps, marker='o', linestyle='-', color='b')
+        plt.xlabel('Taille du plus court chemin')
+        plt.ylabel('Temps d\'absorption moyen')
+        plt.title(title)
+        plt.grid(True)
 
+        # Enregistrer le graphique dans un fichier
+        output_file = os.path.join(os.path.dirname(__file__), file_name)
+        plt.savefig(output_file)
 
 # Noms des méthodes et fonctions associées
 titles = ['Kruskal', 'Recursive Backtracking', 'Recursive Division']
@@ -212,49 +180,6 @@ generate_maze_functions = [optimized_kruskal, recursive_backtracking, recursive_
 
 # Générer et sauvegarder les graphiques
 generate_and_save_plot(titles, file_names, generate_maze_functions)
-
-
-def upload_specific_files_to_github(repo_name, github_token):
-    # Connexion à GitHub
-    g = Github(github_token)
-
-    # Obtention du dépôt
-    user = g.get_user()
-    repo = user.get_repo(repo_name)
-
-    # Liste des fichiers à téléverser
-    files_to_upload = [
-        'recursive_division_stats.png', 'kruskal_stats.png', 'recursive_backtracking_stats.png',
-        'recursive_division_stats_pcc.png', 'kruskal_stats_pcc.png', 'recursive_backtracking_stats_pcc.png'
-    ]
-
-    for file_name in files_to_upload:
-        file_path = Path(file_name)
-        if file_path.is_file():
-            with open(file_path, 'rb') as file:
-                content = file.read()
-            # Chemin dans le dépôt
-            github_path = file_path.name
-
-            # Téléversement du fichier
-            try:
-                # Vérifier si le fichier existe déjà dans le dépôt
-                try:
-                    contents = repo.get_contents(github_path)
-                    repo.update_file(contents.path, f"Update {file_path.name}", content, contents.sha)
-                    print(f"Fichier {file_path.name} mis à jour avec succès.")
-                except:
-                    repo.create_file(github_path, f"Ajout du fichier {file_path.name}", content)
-                    print(f"Fichier {file_path.name} téléversé avec succès.")
-            except Exception as e:
-                print(f"Erreur lors du téléversement du fichier {file_path.name}: {e}")
-
-
-# Exemple d'utilisation
-repo_name = 'tipe'  # Remplacez par le nom de votre dépôt
-github_token = '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'  # Remplacez par votre token GitHub
-
-upload_specific_files_to_github(repo_name, github_token)
 
 
 '''EVOLUTION AVEC LA TAILLE
