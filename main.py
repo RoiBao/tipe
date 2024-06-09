@@ -252,7 +252,7 @@ def upload_specific_files_to_github(repo_name, github_token):
 
 # Exemple d'utilisation
 repo_name = 'tipe'  # Remplacez par le nom de votre dépôt
-github_token = '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'  # Remplacez par votre token GitHub
+github_token = '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'  # Remplacez par votre token GitHub
 
 upload_specific_files_to_github(repo_name, github_token)
 
