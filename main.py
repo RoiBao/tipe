@@ -96,47 +96,6 @@ def dijkstra(matrice_adjacence, depart, arrivee):
     # Retourne la distance au sommet d'arrivée
     return distances[arrivee]
 
-# Paramètres
-n = 100  # Nombre d'expériences
-liste_taille = [i for i in range(2, 52, 2)]
-
-
-# Fonction pour générer et enregistrer les graphiques
-def generate_and_save_plot(titles, file_names, generate_maze_functions):
-    for title, file_name, generate_maze_function in zip(titles, file_names, generate_maze_functions):
-        liste_tps = []
-        for t in liste_taille:
-            L = []
-            for i in range(n):  # On calcule une moyenne sur n labyrinthes générés
-                maze = optimized_generate_graph_random_weight(t, t)
-                if title == 'Recursive Division':
-                    maze = generate_maze_function(maze, t, t)  # Passe les dimensions en plus
-                else:
-                    maze = generate_maze_function(maze)
-                L.append(lab_temps_transition(maze))
-            liste_tps.append(sum(L) / n)
-            print(title + str(t))
-
-        plt.figure()
-        plt.plot(liste_taille, liste_tps, marker='o', linestyle='-', color='b')
-        plt.xlabel('Taille du labyrinthe')
-        plt.ylabel('Temps d\'absorption moyen')
-        plt.title(title)
-        plt.grid(True)
-
-        # Enregistrer le graphique dans un fichier
-        output_file = os.path.join(os.path.dirname(__file__), file_name)
-        plt.savefig(output_file)
-
-
-# Noms des méthodes et fichiers associés
-titles = ['Kruskal', 'Recursive Backtracking', 'Recursive Division']
-file_names = ['kruskal_stats.png', 'recursive_backtracking_stats.png', 'recursive_division_stats.png']
-generate_maze_functions = [optimized_kruskal, recursive_backtracking, recursive_division]
-
-# Générer et enregistrer les graphiques
-generate_and_save_plot(titles, file_names, generate_maze_functions)
-
 # PCC
 def generate_and_save_plot(titles, file_names, generate_maze_functions):
     for title, file_name, generate_maze_function in zip(titles, file_names, generate_maze_functions):
@@ -161,6 +120,7 @@ def generate_and_save_plot(titles, file_names, generate_maze_functions):
 
             liste_tps.append(sum(t1) / len(t1))
             liste_pcc.append(sum(t2) / len(t2))
+            print(title + str(i))
 
         plt.figure()
         plt.plot(liste_pcc, liste_tps, marker='o', linestyle='-', color='b')
@@ -231,4 +191,46 @@ for i in range(p):
     maze = optimized_kruskal(maze)
     L.append(lab_temps_transition(maze))
 tracer_histogramme(L)
+'''
+'''
+# Paramètres
+n = 100  # Nombre d'expériences
+liste_taille = [i for i in range(2, 52, 2)]
+
+
+# Fonction pour générer et enregistrer les graphiques
+def generate_and_save_plot(titles, file_names, generate_maze_functions):
+    for title, file_name, generate_maze_function in zip(titles, file_names, generate_maze_functions):
+        liste_tps = []
+        for t in liste_taille:
+            L = []
+            for i in range(n):  # On calcule une moyenne sur n labyrinthes générés
+                maze = optimized_generate_graph_random_weight(t, t)
+                if title == 'Recursive Division':
+                    maze = generate_maze_function(maze, t, t)  # Passe les dimensions en plus
+                else:
+                    maze = generate_maze_function(maze)
+                L.append(lab_temps_transition(maze))
+            liste_tps.append(sum(L) / n)
+            print(title + str(t))
+
+        plt.figure()
+        plt.plot(liste_taille, liste_tps, marker='o', linestyle='-', color='b')
+        plt.xlabel('Taille du labyrinthe')
+        plt.ylabel('Temps d\'absorption moyen')
+        plt.title(title)
+        plt.grid(True)
+
+        # Enregistrer le graphique dans un fichier
+        output_file = os.path.join(os.path.dirname(__file__), file_name)
+        plt.savefig(output_file)
+
+
+# Noms des méthodes et fichiers associés
+titles = ['Kruskal', 'Recursive Backtracking', 'Recursive Division']
+file_names = ['kruskal_stats.png', 'recursive_backtracking_stats.png', 'recursive_division_stats.png']
+generate_maze_functions = [optimized_kruskal, recursive_backtracking, recursive_division]
+
+# Générer et enregistrer les graphiques
+generate_and_save_plot(titles, file_names, generate_maze_functions)
 '''
