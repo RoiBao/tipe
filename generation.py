@@ -224,19 +224,18 @@ def degree_metric(graph):
 
 # Remarque : le résultat de degree_metric semble dépendre que de n et m taille du labyrinthe et pour n et m fixés, pour kruskal, le résultat semble fixe
 def adjacence_matrix(graph):
-    adj = []
-    for pos_i in graph.graph_dict:
-        ligne = []
-        for pos_j in graph.graph_dict:
-            edge_list = []
-            for edge in graph.graph_dict[pos_j].edges:
-                edge_list.append(edge[0].position)
-            if pos_i in edge_list:
-                ligne.append(1)
-            else:
-                ligne.append(0)
-        adj.append(ligne)
-    return adj
+    positions = list(graph.graph_dict.keys())
+    pos_to_idx = {pos: idx for idx, pos in enumerate(positions)}
+    n = len(positions)
+    adj_matrix = np.zeros((n, n), dtype=int)
+    
+    for pos, node in graph.graph_dict.items():
+        i = pos_to_idx[pos]
+        for edge in node.edges:
+            j = pos_to_idx[edge[0].position]
+            adj_matrix[i][j] = 1
+    
+    return adj_matrix.tolist()
 
 
 def shortest_path_metric(
